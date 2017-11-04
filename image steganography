@@ -1,0 +1,932 @@
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.awt.event.*;
+
+public class MainClient extends WindowAdapter implements ActionListener
+{
+	private JFrame		 mainFrame;
+	private JMenuBar	 menuBar;
+	private JMenu		 menuFile, menuEdit, menuView, menuHelp, menuLookAndFeel;
+	private JMenuItem	 mnuExit, mnuEmbedMessage, mnuEmbedFile, mnuHelp, mnuAbout;
+	private JMenuItem	 mnuRetrieveMessage, mnuRetrieveFile, mnuModifyMaster;
+	private JRadioButtonMenuItem	 mnuTonicFeel, mnuMetalFeel, mnuMotifFeel, mnuWindowsFeel;
+	private ButtonGroup lookAndFeelButtonGroup;
+
+	private JPanel mainPanel, panelAbout, panelButtons;
+	private JLabel lblLogo;
+	private JLabel lblFiller[], lblName, lblEmail, lblPhone;
+	private GridBagLayout gbl;
+	private GridBagConstraints gbc;
+	private MyJButton btnEmbedFile, btnRetrieveFile, btnEmbedMessage, btnRetrieveMessage;
+	private MyJButton btnHelp, btnAbout;
+	private BackEndHandler back;
+
+	
+	private MainClient()
+	{import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.awt.event.*;
+
+public class MainClient extends WindowAdapter implements ActionListener
+{
+	private JFrame		 mainFrame;
+	private JMenuBar	 menuBar;
+	private JMenu		 menuFile, menuEdit, menuView, menuHelp, menuLookAndFeel;
+	private JMenuItem	 mnuExit, mnuEmbedMessage, mnuEmbedFile, mnuHelp, mnuAbout;
+	private JMenuItem	 mnuRetrieveMessage, mnuRetrieveFile, mnuModifyMaster;
+	private JRadioButtonMenuItem	 mnuTonicFeel, mnuMetalFeel, mnuMotifFeel, mnuWindowsFeel;
+	private ButtonGroup lookAndFeelButtonGroup;
+
+	private JPanel mainPanel, panelAbout, panelButtons;
+	private JLabel lblLogo;
+	private JLabel lblFiller[], lblName, lblEmail, lblPhone;
+	private GridBagLayout gbl;
+	private GridBagConstraints gbc;
+	private MyJButton btnEmbedFile, btnRetrieveFile, btnEmbedMessage, btnRetrieveMessage;
+	private MyJButton btnHelp, btnAbout;
+	private BackEndHandler back;
+
+	
+	private MainClient()
+	{
+		try
+		{
+		mainFrame= new JFrame("Image-Stego "+ Steganograph.VERSION+ " ");
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.addWindowListener(this);
+
+		// Setup the menu bar
+		mnuExit= new MyJMenuItem("Exit", 1, 'x');
+		mnuEmbedMessage= new MyJMenuItem("Embed Message", 6, 'm');
+		
+		mnuRetrieveMessage= new MyJMenuItem("Retrieve Message", 0, 'r');
+		
+		// Add item listener for Look and feel menu items
+		RadioListener radioListener= new RadioListener();
+		
+	
+		lookAndFeelButtonGroup= new ButtonGroup();
+		
+		// Add action listeners for other menu items
+		mnuEmbedMessage.addActionListener(this);
+	
+		mnuRetrieveMessage.addActionListener(this);
+		mnuExit.addActionListener(this);
+	
+		menuFile= new MyJMenu("File", 0, 'f');
+		menuFile.add(mnuEmbedMessage);
+		menuFile.add(mnuRetrieveMessage);
+		menuFile.add(mnuExit);
+
+		menuBar= new JMenuBar();
+		menuBar.add(menuFile);
+		mainFrame.setJMenuBar(menuBar);
+
+		mainPanel= new JPanel();
+		panelAbout= new JPanel();
+		panelButtons= new JPanel();
+
+
+		// Create filler labels
+		lblFiller= new JLabel[4];
+		for(int i=0; i<4; i++)
+			lblFiller[i]= new JLabel(" ");
+
+		// Prepare About panel
+		gbl= new GridBagLayout();
+		gbc= new GridBagConstraints();
+		panelAbout.setLayout(gbl);
+		panelAbout.setBackground(Color.white);
+		Color myColor= new Color(50, 153, 237);
+		Font arialFont= new Font("Arial", Font.PLAIN, 14);
+
+		// Prepare the Buttons panel
+		panelButtons.setBackground(Color.white);
+		gbl= new GridBagLayout();
+		panelButtons.setLayout(gbl);
+		panelButtons.setBorder(new TitledBorder(""));
+		
+		lblLogo= new JLabel(new ImageIcon("Images/1.png"));
+		btnEmbedMessage= new MyJButton("Images/EmbedMessage", "Images/EmbedMessageHover");
+		btnEmbedFile= new MyJButton("Images/EmbedFile", "Images/EmbedFileHover");
+		btnRetrieveMessage= new MyJButton("Images/RetrieveMessage", "Images/RetrieveMessageHover");
+		btnRetrieveFile= new MyJButton("Images/RetrieveFile", "Images/RetrieveFileHover");
+		btnHelp= new MyJButton("Images/Help", "Images/HelpHover");
+		btnAbout= new MyJButton("Images/About", "Images/AboutHover");
+
+		// Add action listeners for the buttons
+		btnEmbedMessage.addActionListener(this);
+		btnRetrieveMessage.addActionListener(this);
+		btnAbout.addActionListener(this);
+		
+		// Add filler for rows 1 and 2
+		gbc.weightx= 4;	gbc.weighty= 2;	gbc.fill= gbc.BOTH;
+		gbc.gridx= 6;	gbc.gridy= 1;	gbl.setConstraints(lblFiller[0], gbc);
+		panelButtons.add(lblFiller[0]);
+
+		gbc.gridx= 5;	gbl.setConstraints(btnAbout, gbc);
+		panelButtons.add(btnAbout);
+		
+		
+		// Add filler for rows 4 and 5
+		gbc.fill = gbc.BOTH;
+		gbc.gridx= 5;	gbc.weighty= 1;	gbc.gridy= 20;	gbl.setConstraints(lblFiller[0], gbc);
+		panelButtons.add(lblFiller[0]);
+
+		gbc.fill= gbc.NONE;
+		gbc.gridx= 1;	gbc.weighty= 3;	gbc.gridy= 6;	gbl.setConstraints(btnEmbedMessage, gbc);
+		panelButtons.add(btnEmbedMessage);
+
+		gbc.gridx= 10;	gbl.setConstraints(btnRetrieveMessage, gbc);
+		panelButtons.add(btnRetrieveMessage);
+
+		
+		// Add the lblLogo and two Panels to the mainPanel
+		gbl= new GridBagLayout();
+		mainPanel.setLayout(gbl);
+		mainPanel.setBackground(Color.white);
+
+		gbc.anchor= gbc.CENTER;
+		gbc.gridx= 1;	gbc.gridy= 1;	gbc.weighty= 2;	gbc.fill= gbc.VERTICAL;
+		gbl.setConstraints(lblLogo, gbc);
+		mainPanel.add(lblLogo);
+
+		gbc.gridy= 3;	gbc.weighty= 2;
+		gbl.setConstraints(panelAbout, gbc);
+		mainPanel.add(panelAbout);
+
+		gbc.gridy= 5;	gbc.weighty= 1;
+		gbl.setConstraints(panelButtons, gbc);
+		mainPanel.add(panelButtons);
+
+		gbc.gridy= 6;	gbc.weighty= 2;
+		gbl.setConstraints(lblFiller[3], gbc);
+		mainPanel.add(lblFiller[3]);
+
+		JPanel tempPanel= (JPanel) mainFrame.getContentPane();
+		tempPanel.add(mainPanel, BorderLayout.CENTER);
+		tempPanel.add(new MyJLabel(" ", Color.black, Color.darkGray), BorderLayout.SOUTH);
+
+		Dimension d= Toolkit.getDefaultToolkit().getScreenSize();
+		mainFrame.setSize(d.width, (int) (d.height-(d.height*.03)));
+		mainFrame.setResizable(false);
+		mainFrame.setVisible(true);
+		}
+		catch(Exception ex)
+		{
+			System.out.println("CAUGHT");
+		}
+	}
+
+	// Listener methods
+	public void actionPerformed(ActionEvent e)
+	{
+		Object source= e.getSource();
+
+		// Embed message operation
+		if(source== mnuEmbedMessage || source== btnEmbedMessage)
+		{
+			back= new BackEndHandler(this, BackEndHandler.EMBED_MESSAGE);
+			back.start();
+		}
+
+		// Retrieve message operation
+		if(source== mnuRetrieveMessage || source== btnRetrieveMessage)
+		{
+			back= new BackEndHandler(this, BackEndHandler.RETRIEVE_MESSAGE);
+			back.start();
+		}
+
+		
+		if(source== mnuAbout || source== btnAbout)
+			Steganograph.showAboutDialog();
+
+		if(source== mnuExit)
+		{
+			int result= JOptionPane.showConfirmDialog(mainFrame, "Are you sure that you want to close Steganograph.", "Confirm Exit", JOptionPane.YES_NO_OPTION);
+			if(result== JOptionPane.YES_OPTION)
+			{
+				JOptionPane.showMessageDialog(mainFrame, "Thanks for using this Steganograph.\n", "From the Author", JOptionPane.INFORMATION_MESSAGE);
+				System.exit(0);
+			}
+		}
+	}
+
+	public void windowClosing(WindowEvent w)
+	{
+		//JOptionPane.showMessageDialog(mainFrame, "Thanks for using this Steganograph.\nPlease do vote for this code :)", "From the Author", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	// Class for lissoning to Look and feel radio menu events
+	private class RadioListener implements ItemListener
+	{
+		public void itemStateChanged(ItemEvent e)
+		{
+			JMenuItem item= (JMenuItem) e.getSource();
+			try
+			{
+				if(item== mnuTonicFeel && mnuTonicFeel.isSelected())
+					UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+
+				if(item== mnuMetalFeel && mnuMetalFeel.isSelected())
+					UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+
+				if(item== mnuMotifFeel && mnuMotifFeel.isSelected())
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+
+				if(item== mnuWindowsFeel && mnuWindowsFeel.isSelected())
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+
+				SwingUtilities.updateComponentTreeUI(mainFrame);
+				Steganograph.updateUserInterface();
+			}
+			catch(Exception ex)
+			{
+//				JOptionPane.showMessageDialog(mainFrame, "Oops!!\n"+ "Unable to load "+ item.getText()+ " Look and feel.", "Warning!", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+	}
+
+	// Main method
+	public static void main(String args[])
+	{
+		new MainClient();
+	}
+
+	
+}
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.awt.event.*;
+
+public class MainClient extends WindowAdapter implements ActionListener
+{
+	private JFrame		 mainFrame;
+	private JMenuBar	 menuBar;
+	private JMenu		 menuFile, menuEdit, menuView, menuHelp, menuLookAndFeel;
+	private JMenuItem	 mnuExit, mnuEmbedMessage, mnuEmbedFile, mnuHelp, mnuAbout;
+	private JMenuItem	 mnuRetrieveMessage, mnuRetrieveFile, mnuModifyMaster;
+	private JRadioButtonMenuItem	 mnuTonicFeel, mnuMetalFeel, mnuMotifFeel, mnuWindowsFeel;
+	private ButtonGroup lookAndFeelButtonGroup;
+
+	private JPanel mainPanel, panelAbout, panelButtons;
+	private JLabel lblLogo;
+	private JLabel lblFiller[], lblName, lblEmail, lblPhone;
+	private GridBagLayout gbl;
+	private GridBagConstraints gbc;
+	private MyJButton btnEmbedFile, btnRetrieveFile, btnEmbedMessage, btnRetrieveMessage;
+	private MyJButton btnHelp, btnAbout;
+	private BackEndHandler back;
+
+	
+	private MainClient()
+	{
+		try
+		{
+		mainFrame= new JFrame("Image-Stego "+ Steganograph.VERSION+ " ");
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.addWindowListener(this);
+
+		// Setup the menu bar
+		mnuExit= new MyJMenuItem("Exit", 1, 'x');
+		mnuEmbedMessage= new MyJMenuItem("Embed Message", 6, 'm');
+		
+		mnuRetrieveMessage= new MyJMenuItem("Retrieve Message", 0, 'r');
+		
+		// Add item listener for Look and feel menu items
+		RadioListener radioListener= new RadioListener();
+		
+	
+		lookAndFeelButtonGroup= new ButtonGroup();
+		
+		// Add action listeners for other menu items
+		mnuEmbedMessage.addActionListener(this);
+	
+		mnuRetrieveMessage.addActionListener(this);
+		mnuExit.addActionListener(this);
+	
+		menuFile= new MyJMenu("File", 0, 'f');
+		menuFile.add(mnuEmbedMessage);
+		menuFile.add(mnuRetrieveMessage);
+		menuFile.add(mnuExit);
+
+		menuBar= new JMenuBar();
+		menuBar.add(menuFile);
+		mainFrame.setJMenuBar(menuBar);
+
+		mainPanel= new JPanel();
+		panelAbout= new JPanel();
+		panelButtons= new JPanel();
+
+
+		// Create filler labels
+		lblFiller= new JLabel[4];
+		for(int i=0; i<4; i++)
+			lblFiller[i]= new JLabel(" ");
+
+		// Prepare About panel
+		gbl= new GridBagLayout();
+		gbc= new GridBagConstraints();
+		panelAbout.setLayout(gbl);
+		panelAbout.setBackground(Color.white);
+		Color myColor= new Color(50, 153, 237);
+		Font arialFont= new Font("Arial", Font.PLAIN, 14);
+
+		// Prepare the Buttons panel
+		panelButtons.setBackground(Color.white);
+		gbl= new GridBagLayout();
+		panelButtons.setLayout(gbl);
+		panelButtons.setBorder(new TitledBorder(""));
+		
+		lblLogo= new JLabel(new ImageIcon("Images/1.png"));
+		btnEmbedMessage= new MyJButton("Images/EmbedMessage", "Images/EmbedMessageHover");
+		btnEmbedFile= new MyJButton("Images/EmbedFile", "Images/EmbedFileHover");
+		btnRetrieveMessage= new MyJButton("Images/RetrieveMessage", "Images/RetrieveMessageHover");
+		btnRetrieveFile= new MyJButton("Images/RetrieveFile", "Images/RetrieveFileHover");
+		btnHelp= new MyJButton("Images/Help", "Images/HelpHover");
+		btnAbout= new MyJButton("Images/About", "Images/AboutHover");
+
+		// Add action listeners for the buttons
+		btnEmbedMessage.addActionListener(this);
+		btnRetrieveMessage.addActionListener(this);
+		btnAbout.addActionListener(this);
+		
+		// Add filler for rows 1 and 2
+		gbc.weightx= 4;	gbc.weighty= 2;	gbc.fill= gbc.BOTH;
+		gbc.gridx= 6;	gbc.gridy= 1;	gbl.setConstraints(lblFiller[0], gbc);
+		panelButtons.add(lblFiller[0]);
+
+		gbc.gridx= 5;	gbl.setConstraints(btnAbout, gbc);
+		panelButtons.add(btnAbout);
+		
+		
+		// Add filler for rows 4 and 5
+		gbc.fill = gbc.BOTH;
+		gbc.gridx= 5;	gbc.weighty= 1;	gbc.gridy= 20;	gbl.setConstraints(lblFiller[0], gbc);
+		panelButtons.add(lblFiller[0]);
+
+		gbc.fill= gbc.NONE;
+		gbc.gridx= 1;	gbc.weighty= 3;	gbc.gridy= 6;	gbl.setConstraints(btnEmbedMessage, gbc);
+		panelButtons.add(btnEmbedMessage);
+
+		gbc.gridx= 10;	gbl.setConstraints(btnRetrieveMessage, gbc);
+		panelButtons.add(btnRetrieveMessage);
+
+		
+		// Add the lblLogo and two Panels to the mainPanel
+		gbl= new GridBagLayout();
+		mainPanel.setLayout(gbl);
+		mainPanel.setBackground(Color.white);
+
+		gbc.anchor= gbc.CENTER;
+		gbc.gridx= 1;	gbc.gridy= 1;	gbc.weighty= 2;	gbc.fill= gbc.VERTICAL;
+		gbl.setConstraints(lblLogo, gbc);
+		mainPanel.add(lblLogo);
+
+		gbc.gridy= 3;	gbc.weighty= 2;
+		gbl.setConstraints(panelAbout, gbc);
+		mainPanel.add(panelAbout);
+
+		gbc.gridy= 5;	gbc.weighty= 1;
+		gbl.setConstraints(panelButtons, gbc);
+		mainPanel.add(panelButtons);
+
+		gbc.gridy= 6;	gbc.weighty= 2;
+		gbl.setConstraints(lblFiller[3], gbc);
+		mainPanel.add(lblFiller[3]);
+
+		JPanel tempPanel= (JPanel) mainFrame.getContentPane();
+		tempPanel.add(mainPanel, BorderLayout.CENTER);
+		tempPanel.add(new MyJLabel(" ", Color.black, Color.darkGray), BorderLayout.SOUTH);
+
+		Dimension d= Toolkit.getDefaultToolkit().getScreenSize();
+		mainFrame.setSize(d.width, (int) (d.height-(d.height*.03)));
+		mainFrame.setResizable(false);
+		mainFrame.setVisible(true);
+		}
+		catch(Exception ex)
+		{
+			System.out.println("CAUGHT");
+		}
+	}
+
+	// Listener methods
+	public void actionPerformed(ActionEvent e)
+	{
+		Object source= e.getSource();
+
+		// Embed message operation
+		if(source== mnuEmbedMessage || source== btnEmbedMessage)
+		{
+			back= new BackEndHandler(this, BackEndHandler.EMBED_MESSAGE);
+			back.start();
+		}
+
+		// Retrieve message operation
+		if(source== mnuRetrieveMessage || source== btnRetrieveMessage)
+		{
+			back= new BackEndHandler(this, BackEndHandler.RETRIEVE_MESSAGE);
+			back.start();
+		}
+
+		
+		if(source== mnuAbout || source== btnAbout)
+			Steganograph.showAboutDialog();
+
+		if(source== mnuExit)
+		{
+			int result= JOptionPane.showConfirmDialog(mainFrame, "Are you sure that you want to close Steganograph.", "Confirm Exit", JOptionPane.YES_NO_OPTION);
+			if(result== JOptionPane.YES_OPTION)
+			{
+				JOptionPane.showMessageDialog(mainFrame, "Thanks for using this Steganograph.\n", "From the Author", JOptionPane.INFORMATION_MESSAGE);
+				System.exit(0);
+			}
+		}
+	}
+
+	public void windowClosing(WindowEvent w)
+	{
+		//JOptionPane.showMessageDialog(mainFrame, "Thanks for using this Steganograph.\nPlease do vote for this code :)", "From the Author", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	// Class for lissoning to Look and feel radio menu events
+	private class RadioListener implements ItemListener
+	{
+		public void itemStateChanged(ItemEvent e)
+		{
+			JMenuItem item= (JMenuItem) e.getSource();
+			try
+			{
+				if(item== mnuTonicFeel && mnuTonicFeel.isSelected())
+					UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+
+				if(item== mnuMetalFeel && mnuMetalFeel.isSelected())
+					UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+
+				if(item== mnuMotifFeel && mnuMotifFeel.isSelected())
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+
+				if(item== mnuWindowsFeel && mnuWindowsFeel.isSelected())
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+
+				SwingUtilities.updateComponentTreeUI(mainFrame);
+				Steganograph.updateUserInterface();
+			}
+			catch(Exception ex)
+			{
+//				JOptionPane.showMessageDialog(mainFrame, "Oops!!\n"+ "Unable to load "+ item.getText()+ " Look and feel.", "Warning!", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+	}
+
+	// Main method
+	public static void main(String args[])
+	{
+		new MainClient();
+	}
+
+	
+}
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.awt.event.*;
+
+public class MainClient extends WindowAdapter implements ActionListener
+{
+	private JFrame		 mainFrame;
+	private JMenuBar	 menuBar;
+	private JMenu		 menuFile, menuEdit, menuView, menuHelp, menuLookAndFeel;
+	private JMenuItem	 mnuExit, mnuEmbedMessage, mnuEmbedFile, mnuHelp, mnuAbout;
+	private JMenuItem	 mnuRetrieveMessage, mnuRetrieveFile, mnuModifyMaster;
+	private JRadioButtonMenuItem	 mnuTonicFeel, mnuMetalFeel, mnuMotifFeel, mnuWindowsFeel;
+	private ButtonGroup lookAndFeelButtonGroup;
+
+	private JPanel mainPanel, panelAbout, panelButtons;
+	private JLabel lblLogo;
+	private JLabel lblFiller[], lblName, lblEmail, lblPhone;
+	private GridBagLayout gbl;
+	private GridBagConstraints gbc;
+	private MyJButton btnEmbedFile, btnRetrieveFile, btnEmbedMessage, btnRetrieveMessage;
+	private MyJButton btnHelp, btnAbout;
+	private BackEndHandler back;
+
+	
+	private MainClient()
+	{
+		try
+		{
+		mainFrame= new JFrame("Image-Stego "+ Steganograph.VERSION+ " ");
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.addWindowListener(this);
+
+		// Setup the menu bar
+		mnuExit= new MyJMenuItem("Exit", 1, 'x');
+		mnuEmbedMessage= new MyJMenuItem("Embed Message", 6, 'm');
+		
+		mnuRetrieveMessage= new MyJMenuItem("Retrieve Message", 0, 'r');
+		
+		// Add item listener for Look and feel menu items
+		RadioListener radioListener= new RadioListener();
+		
+	
+		lookAndFeelButtonGroup= new ButtonGroup();
+		
+		// Add action listeners for other menu items
+		mnuEmbedMessage.addActionListener(this);
+	
+		mnuRetrieveMessage.addActionListener(this);
+		mnuExit.addActionListener(this);
+	
+		menuFile= new MyJMenu("File", 0, 'f');
+		menuFile.add(mnuEmbedMessage);
+		menuFile.add(mnuRetrieveMessage);
+		menuFile.add(mnuExit);
+
+		menuBar= new JMenuBar();
+		menuBar.add(menuFile);
+		mainFrame.setJMenuBar(menuBar);
+
+		mainPanel= new JPanel();
+		panelAbout= new JPanel();
+		panelButtons= new JPanel();
+
+
+		// Create filler labels
+		lblFiller= new JLabel[4];
+		for(int i=0; i<4; i++)
+			lblFiller[i]= new JLabel(" ");
+
+		// Prepare About panel
+		gbl= new GridBagLayout();
+		gbc= new GridBagConstraints();
+		panelAbout.setLayout(gbl);
+		panelAbout.setBackground(Color.white);
+		Color myColor= new Color(50, 153, 237);
+		Font arialFont= new Font("Arial", Font.PLAIN, 14);
+
+		// Prepare the Buttons panel
+		panelButtons.setBackground(Color.white);
+		gbl= new GridBagLayout();
+		panelButtons.setLayout(gbl);
+		panelButtons.setBorder(new TitledBorder(""));
+		
+		lblLogo= new JLabel(new ImageIcon("Images/1.png"));
+		btnEmbedMessage= new MyJButton("Images/EmbedMessage", "Images/EmbedMessageHover");
+		btnEmbedFile= new MyJButton("Images/EmbedFile", "Images/EmbedFileHover");
+		btnRetrieveMessage= new MyJButton("Images/RetrieveMessage", "Images/RetrieveMessageHover");
+		btnRetrieveFile= new MyJButton("Images/RetrieveFile", "Images/RetrieveFileHover");
+		btnHelp= new MyJButton("Images/Help", "Images/HelpHover");
+		btnAbout= new MyJButton("Images/About", "Images/AboutHover");
+
+		// Add action listeners for the buttons
+		btnEmbedMessage.addActionListener(this);
+		btnRetrieveMessage.addActionListener(this);
+		btnAbout.addActionListener(this);
+		
+		// Add filler for rows 1 and 2
+		gbc.weightx= 4;	gbc.weighty= 2;	gbc.fill= gbc.BOTH;
+		gbc.gridx= 6;	gbc.gridy= 1;	gbl.setConstraints(lblFiller[0], gbc);
+		panelButtons.add(lblFiller[0]);
+
+		gbc.gridx= 5;	gbl.setConstraints(btnAbout, gbc);
+		panelButtons.add(btnAbout);
+		
+		
+		// Add filler for rows 4 and 5
+		gbc.fill = gbc.BOTH;
+		gbc.gridx= 5;	gbc.weighty= 1;	gbc.gridy= 20;	gbl.setConstraints(lblFiller[0], gbc);
+		panelButtons.add(lblFiller[0]);
+
+		gbc.fill= gbc.NONE;
+		gbc.gridx= 1;	gbc.weighty= 3;	gbc.gridy= 6;	gbl.setConstraints(btnEmbedMessage, gbc);
+		panelButtons.add(btnEmbedMessage);
+
+		gbc.gridx= 10;	gbl.setConstraints(btnRetrieveMessage, gbc);
+		panelButtons.add(btnRetrieveMessage);
+
+		
+		// Add the lblLogo and two Panels to the mainPanel
+		gbl= new GridBagLayout();
+		mainPanel.setLayout(gbl);
+		mainPanel.setBackground(Color.white);
+
+		gbc.anchor= gbc.CENTER;
+		gbc.gridx= 1;	gbc.gridy= 1;	gbc.weighty= 2;	gbc.fill= gbc.VERTICAL;
+		gbl.setConstraints(lblLogo, gbc);
+		mainPanel.add(lblLogo);
+
+		gbc.gridy= 3;	gbc.weighty= 2;
+		gbl.setConstraints(panelAbout, gbc);
+		mainPanel.add(panelAbout);
+
+		gbc.gridy= 5;	gbc.weighty= 1;
+		gbl.setConstraints(panelButtons, gbc);
+		mainPanel.add(panelButtons);
+
+		gbc.gridy= 6;	gbc.weighty= 2;
+		gbl.setConstraints(lblFiller[3], gbc);
+		mainPanel.add(lblFiller[3]);
+
+		JPanel tempPanel= (JPanel) mainFrame.getContentPane();
+		tempPanel.add(mainPanel, BorderLayout.CENTER);
+		tempPanel.add(new MyJLabel(" ", Color.black, Color.darkGray), BorderLayout.SOUTH);
+
+		Dimension d= Toolkit.getDefaultToolkit().getScreenSize();
+		mainFrame.setSize(d.width, (int) (d.height-(d.height*.03)));
+		mainFrame.setResizable(false);
+		mainFrame.setVisible(true);
+		}
+		catch(Exception ex)
+		{
+			System.out.println("CAUGHT");
+		}
+	}
+
+	// Listener methods
+	public void actionPerformed(ActionEvent e)
+	{
+		Object source= e.getSource();
+
+		// Embed message operation
+		if(source== mnuEmbedMessage || source== btnEmbedMessage)
+		{
+			back= new BackEndHandler(this, BackEndHandler.EMBED_MESSAGE);
+			back.start();
+		}
+
+		// Retrieve message operation
+		if(source== mnuRetrieveMessage || source== btnRetrieveMessage)
+		{
+			back= new BackEndHandler(this, BackEndHandler.RETRIEVE_MESSAGE);
+			back.start();
+		}
+
+		
+		if(source== mnuAbout || source== btnAbout)
+			Steganograph.showAboutDialog();
+
+		if(source== mnuExit)
+		{
+			int result= JOptionPane.showConfirmDialog(mainFrame, "Are you sure that you want to close Steganograph.", "Confirm Exit", JOptionPane.YES_NO_OPTION);
+			if(result== JOptionPane.YES_OPTION)
+			{
+				JOptionPane.showMessageDialog(mainFrame, "Thanks for using this Steganograph.\n", "From the Author", JOptionPane.INFORMATION_MESSAGE);
+				System.exit(0);
+			}
+		}
+	}
+
+	public void windowClosing(WindowEvent w)
+	{	
+		//JOptionPane.showMessageDialog(mainFrame, "Thanks for using this Steganograph.\nPlease do vote for this code :)", "From the Author", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	// Class for lissoning to Look and feel radio menu events
+	private class RadioListener implements ItemListener
+	{
+		public void itemStateChanged(ItemEvent e)
+		{
+			JMenuItem item= (JMenuItem) e.getSource();
+			try
+			{
+				if(item== mnuTonicFeel && mnuTonicFeel.isSelected())
+					UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+
+				if(item== mnuMetalFeel && mnuMetalFeel.isSelected())
+					UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+
+				if(item== mnuMotifFeel && mnuMotifFeel.isSelected())
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+
+				if(item== mnuWindowsFeel && mnuWindowsFeel.isSelected())
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+
+				SwingUtilities.updateComponentTreeUI(mainFrame);
+				Steganograph.updateUserInterface();
+			}
+			catch(Exception ex)
+			{
+//				JOptionPane.showMessageDialog(mainFrame, "Oops!!\n"+ "Unable to load "+ item.getText()+ " Look and feel.", "Warning!", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+	}
+
+	// Main method
+	public static void main(String args[])
+	{
+		new MainClient();
+	}
+
+	
+}
+
+		try
+		{
+		mainFrame= new JFrame("Image-Stego "+ Steganograph.VERSION+ " ");
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.addWindowListener(this);
+
+		// Setup the menu bar
+		mnuExit= new MyJMenuItem("Exit", 1, 'x');
+		mnuEmbedMessage= new MyJMenuItem("Embed Message", 6, 'm');
+		
+		mnuRetrieveMessage= new MyJMenuItem("Retrieve Message", 0, 'r');
+		
+		// Add item listener for Look and feel menu items
+		RadioListener radioListener= new RadioListener();
+		
+	
+		lookAndFeelButtonGroup= new ButtonGroup();
+		
+		// Add action listeners for other menu items
+		mnuEmbedMessage.addActionListener(this);
+	
+		mnuRetrieveMessage.addActionListener(this);
+		mnuExit.addActionListener(this);
+	
+		menuFile= new MyJMenu("File", 0, 'f');
+		menuFile.add(mnuEmbedMessage);
+		menuFile.add(mnuRetrieveMessage);
+		menuFile.add(mnuExit);
+
+		menuBar= new JMenuBar();
+		menuBar.add(menuFile);
+		mainFrame.setJMenuBar(menuBar);
+
+		mainPanel= new JPanel();
+		panelAbout= new JPanel();
+		panelButtons= new JPanel();
+
+
+		// Create filler labels
+		lblFiller= new JLabel[4];
+		for(int i=0; i<4; i++)
+			lblFiller[i]= new JLabel(" ");
+
+		// Prepare About panel
+		gbl= new GridBagLayout();
+		gbc= new GridBagConstraints();
+		panelAbout.setLayout(gbl);
+		panelAbout.setBackground(Color.white);
+		Color myColor= new Color(50, 153, 237);
+		Font arialFont= new Font("Arial", Font.PLAIN, 14);
+
+		// Prepare the Buttons panel
+		panelButtons.setBackground(Color.white);
+		gbl= new GridBagLayout();
+		panelButtons.setLayout(gbl);
+		panelButtons.setBorder(new TitledBorder(""));
+		
+		lblLogo= new JLabel(new ImageIcon("Images/1.png"));
+		btnEmbedMessage= new MyJButton("Images/EmbedMessage", "Images/EmbedMessageHover");
+		btnEmbedFile= new MyJButton("Images/EmbedFile", "Images/EmbedFileHover");
+		btnRetrieveMessage= new MyJButton("Images/RetrieveMessage", "Images/RetrieveMessageHover");
+		btnRetrieveFile= new MyJButton("Images/RetrieveFile", "Images/RetrieveFileHover");
+		btnHelp= new MyJButton("Images/Help", "Images/HelpHover");
+		btnAbout= new MyJButton("Images/About", "Images/AboutHover");
+
+		// Add action listeners for the buttons
+		btnEmbedMessage.addActionListener(this);
+		btnRetrieveMessage.addActionListener(this);
+		btnAbout.addActionListener(this);
+		
+		// Add filler for rows 1 and 2
+		gbc.weightx= 4;	gbc.weighty= 2;	gbc.fill= gbc.BOTH;
+		gbc.gridx= 6;	gbc.gridy= 1;	gbl.setConstraints(lblFiller[0], gbc);
+		panelButtons.add(lblFiller[0]);
+
+		gbc.gridx= 5;	gbl.setConstraints(btnAbout, gbc);
+		panelButtons.add(btnAbout);
+		
+		
+		// Add filler for rows 4 and 5
+		gbc.fill = gbc.BOTH;
+		gbc.gridx= 5;	gbc.weighty= 1;	gbc.gridy= 20;	gbl.setConstraints(lblFiller[0], gbc);
+		panelButtons.add(lblFiller[0]);
+
+		gbc.fill= gbc.NONE;
+		gbc.gridx= 1;	gbc.weighty= 3;	gbc.gridy= 6;	gbl.setConstraints(btnEmbedMessage, gbc);
+		panelButtons.add(btnEmbedMessage);
+
+		gbc.gridx= 10;	gbl.setConstraints(btnRetrieveMessage, gbc);
+		panelButtons.add(btnRetrieveMessage);
+
+		
+		// Add the lblLogo and two Panels to the mainPanel
+		gbl= new GridBagLayout();
+		mainPanel.setLayout(gbl);
+		mainPanel.setBackground(Color.white);
+
+		gbc.anchor= gbc.CENTER;
+		gbc.gridx= 1;	gbc.gridy= 1;	gbc.weighty= 2;	gbc.fill= gbc.VERTICAL;
+		gbl.setConstraints(lblLogo, gbc);
+		mainPanel.add(lblLogo);
+
+		gbc.gridy= 3;	gbc.weighty= 2;
+		gbl.setConstraints(panelAbout, gbc);
+		mainPanel.add(panelAbout);
+
+		gbc.gridy= 5;	gbc.weighty= 1;
+		gbl.setConstraints(panelButtons, gbc);
+		mainPanel.add(panelButtons);
+
+		gbc.gridy= 6;	gbc.weighty= 2;
+		gbl.setConstraints(lblFiller[3], gbc);
+		mainPanel.add(lblFiller[3]);
+
+		JPanel tempPanel= (JPanel) mainFrame.getContentPane();
+		tempPanel.add(mainPanel, BorderLayout.CENTER);
+		tempPanel.add(new MyJLabel(" ", Color.black, Color.darkGray), BorderLayout.SOUTH);
+
+		Dimension d= Toolkit.getDefaultToolkit().getScreenSize();
+		mainFrame.setSize(d.width, (int) (d.height-(d.height*.03)));
+		mainFrame.setResizable(false);
+		mainFrame.setVisible(true);
+		}
+		catch(Exception ex)
+		{
+			System.out.println("CAUGHT");
+		}
+	}
+
+	// Listener methods
+	public void actionPerformed(ActionEvent e)
+	{
+		Object source= e.getSource();
+
+		// Embed message operation
+		if(source== mnuEmbedMessage || source== btnEmbedMessage)
+		{
+			back= new BackEndHandler(this, BackEndHandler.EMBED_MESSAGE);
+			back.start();
+		}
+
+		// Retrieve message operation
+		if(source== mnuRetrieveMessage || source== btnRetrieveMessage)
+		{
+			back= new BackEndHandler(this, BackEndHandler.RETRIEVE_MESSAGE);
+			back.start();
+		}
+
+		
+		if(source== mnuAbout || source== btnAbout)
+			Steganograph.showAboutDialog();
+
+		if(source== mnuExit)
+		{
+			int result= JOptionPane.showConfirmDialog(mainFrame, "Are you sure that you want to close Steganograph.", "Confirm Exit", JOptionPane.YES_NO_OPTION);
+			if(result== JOptionPane.YES_OPTION)
+			{
+				JOptionPane.showMessageDialog(mainFrame, "Thanks for using this Steganograph.\n", "From the Author", JOptionPane.INFORMATION_MESSAGE);
+				System.exit(0);
+			}
+		}
+	}
+
+	public void windowClosing(WindowEvent w)
+	{
+		//JOptionPane.showMessageDialog(mainFrame, "Thanks for using this Steganograph.\nPlease do vote for this code :)", "From the Author", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	// Class for lissoning to Look and feel radio menu events
+	private class RadioListener implements ItemListener
+	{
+		public void itemStateChanged(ItemEvent e)
+		{
+			JMenuItem item= (JMenuItem) e.getSource();
+			try
+			{
+				if(item== mnuTonicFeel && mnuTonicFeel.isSelected())
+					UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+
+				if(item== mnuMetalFeel && mnuMetalFeel.isSelected())
+					UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+
+				if(item== mnuMotifFeel && mnuMotifFeel.isSelected())
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+
+				if(item== mnuWindowsFeel && mnuWindowsFeel.isSelected())
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+
+				SwingUtilities.updateComponentTreeUI(mainFrame);
+				Steganograph.updateUserInterface();
+			}
+			catch(Exception ex)
+			{
+//				JOptionPane.showMessageDialog(mainFrame, "Oops!!\n"+ "Unable to load "+ item.getText()+ " Look and feel.", "Warning!", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+	}
+
+	// Main method
+	public static void main(String args[])
+	{
+		new MainClient();
+	}
+
+	
+}
